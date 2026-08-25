@@ -1,0 +1,355 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Komikhwa Scraper API",
+    "description": "Komikhwa Scraper API — format response PERSIS API Sanka (versi Komikindo).\n\nSemua endpoint di-scrape langsung dari komikhwa.com. Klik **Try it out** untuk test langsung dari halaman ini.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Komikhwa API"
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    { "name": "Komik", "description": "Endpoint utama komik" },
+    { "name": "Fitur", "description": "Pencarian, genre, dan library" }
+  ],
+  "paths": {
+    "/comic/komikindo/latest/{page}": {
+      "get": {
+        "tags": ["Komik"],
+        "summary": "Komik Terbaru",
+        "description": "Daftar komik terbaru (urut update, 20 per halaman).",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "default": 1 },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "pagination": {
+                    "currentPage": 1,
+                    "totalPages": 13,
+                    "hasNextPage": true,
+                    "nextPage": 2
+                  },
+                  "komikList": [
+                    {
+                      "title": "My Very Own Tower Strategy Guide",
+                      "slug": "my-very-own-tower-strategy-guide",
+                      "image": "https://komikhwa.com/wp-content/uploads/2026/06/i448159.jpg",
+                      "type": null,
+                      "color": null,
+                      "chapters": [
+                        {
+                          "title": "Chapter 133",
+                          "slug": "my-very-own-tower-strategy-guide-chapter-133",
+                          "date": "2026-08-25"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": { "description": "Halaman tidak ditemukan" },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    },
+    "/comic/komikindo/detail/{slug}": {
+      "get": {
+        "tags": ["Komik"],
+        "summary": "Detail Komik",
+        "description": "Info detail, sinopsis, dan daftar chapter lengkap.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "my-avatar-is-becoming-the-final-boss-remake"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "data": {
+                    "id": "23329",
+                    "title": "My Avatar Is Becoming the Final Boss (Remake)",
+                    "image": "https://komikhwa.com/wp-content/uploads/2026/05/i523842-214x300.jpg",
+                    "rating": "5",
+                    "votes": null,
+                    "detail": {
+                      "alternativeTitle": "My Avatar is Becoming the Ultimate BOSS, 我的化身正在成为最终BOSS",
+                      "status": "Ongoing",
+                      "author": "汐尺, 衣月动漫",
+                      "illustrator": "衣月动漫",
+                      "type": "Manhua",
+                      "theme": null
+                    },
+                    "genres": [
+                      { "name": "Action", "slug": "/genres/action" },
+                      { "name": "Adventure", "slug": "/genres/adventure" }
+                    ],
+                    "description": "Setelah menjalani kehidupan biasa selama lebih dari sepuluh tahun...",
+                    "firstChapter": {
+                      "title": "Chapter 0",
+                      "slug": "my-avatar-is-becoming-the-final-boss-remake-chapter-0"
+                    },
+                    "latestChapter": {
+                      "title": "Chapter 38",
+                      "slug": "my-avatar-is-becoming-the-final-boss-remake-chapter-38"
+                    },
+                    "chapters": [
+                      {
+                        "title": "Chapter 38",
+                        "slug": "my-avatar-is-becoming-the-final-boss-remake-chapter-38",
+                        "releaseTime": "4 hari yang lalu"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Komik tidak ditemukan" },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    },
+    "/comic/komikindo/chapter/{slug}": {
+      "get": {
+        "tags": ["Komik"],
+        "summary": "Baca Chapter",
+        "description": "Daftar gambar chapter beserta navigasi prev/next dan info komik.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "my-avatar-is-becoming-the-final-boss-remake-chapter-0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "data": {
+                    "id": "23331",
+                    "title": "My Avatar Is Becoming the Final Boss (Remake) Chapter 0",
+                    "navigation": {
+                      "prev": null,
+                      "next": "my-avatar-is-becoming-the-final-boss-remake-chapter-1"
+                    },
+                    "allChapterSlug": "my-avatar-is-becoming-the-final-boss-remake",
+                    "images": [
+                      "https://i0.wp.com/blogger.googleusercontent.com/img/.../1.webp"
+                    ],
+                    "thumbnail": {
+                      "url": "https://komikhwa.com/wp-content/uploads/2026/05/i523842-214x300.jpg",
+                      "title": "My Avatar Is Becoming the Final Boss (Remake)"
+                    },
+                    "komikInfo": {
+                      "title": "My Avatar Is Becoming the Final Boss (Remake)",
+                      "description": "Setelah menjalani kehidupan biasa...",
+                      "chapters": [
+                        {
+                          "title": "Chapter 38",
+                          "slug": "my-avatar-is-becoming-the-final-boss-remake-chapter-38"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Chapter tidak ditemukan" },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    },
+    "/comic/komikindo/library": {
+      "get": {
+        "tags": ["Fitur"],
+        "summary": "Library / Daftar Komik",
+        "description": "Daftar komik dengan filter genre (koma untuk multi), sort, dan type.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 },
+            "example": 1
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Satu atau lebih genre dipisah koma. Lihat /genres.",
+            "example": "action,drama"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": { "type": "string", "default": "latest" },
+            "description": "latest | popular | rating (jika tersedia)",
+            "example": "latest"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": { "type": "string" },
+            "example": "manhwa"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "pagination": {
+                    "currentPage": 1,
+                    "totalPages": 10,
+                    "hasNextPage": true,
+                    "nextPage": 2
+                  },
+                  "filters": { "genre": ["action"] },
+                  "komikList": [
+                    {
+                      "title": "My Very Own Tower Strategy Guide",
+                      "rating": "5.8",
+                      "slug": "my-very-own-tower-strategy-guide",
+                      "image": "https://komikhwa.com/wp-content/uploads/2026/06/i448159.jpg",
+                      "type": null,
+                      "color": null
+                    }
+                  ],
+                  "komikPopuler": [
+                    {
+                      "rank": "1",
+                      "title": "My Very Own Tower Strategy Guide",
+                      "slug": "my-very-own-tower-strategy-guide",
+                      "author": null,
+                      "rating": "5.8",
+                      "image": "https://komikhwa.com/wp-content/uploads/2026/06/i448159.jpg"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": { "description": "Halaman tidak ditemukan" },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    },
+    "/comic/komikindo/genres": {
+      "get": {
+        "tags": ["Fitur"],
+        "summary": "Daftar Genre",
+        "description": "Semua genre yang tersedia (dipakai untuk filter library).",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "genres": [
+                    { "name": "Action", "value": "action" },
+                    { "name": "Adult", "value": "adult" },
+                    { "name": "Adventure", "value": "adventure" }
+                  ]
+                }
+              }
+            }
+          },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    },
+    "/comic/komikindo/search/{query}/{page}": {
+      "get": {
+        "tags": ["Fitur"],
+        "summary": "Cari Komik",
+        "description": "Mencari komik berdasarkan judul. Query boleh dibungkus tanda kutip, akan dibersihkan otomatis.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "princess"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "default": 1 },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "creator": "Sanka Vollerei",
+                  "success": true,
+                  "query": "princess",
+                  "pagination": {
+                    "currentPage": 1,
+                    "hasNextPage": false,
+                    "nextPage": null
+                  },
+                  "komikList": [
+                    {
+                      "title": "Devil Princess",
+                      "rating": null,
+                      "slug": "devil-princess",
+                      "image": "https://komikhwa.com/wp-content/uploads/2026/07/cover-32181-537216e053cc40fe44f7c3bb6da560ba-1-207x300.jpg",
+                      "type": null,
+                      "color": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": { "description": "Halaman tidak ditemukan" },
+          "500": { "description": "Error scraping" }
+        }
+      }
+    }
+  }
+}

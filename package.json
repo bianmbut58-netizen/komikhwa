@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "cheerio": "^1.0.0",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "swagger-ui-dist": "^5.32.14"
   }
 }

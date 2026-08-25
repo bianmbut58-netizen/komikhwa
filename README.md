@@ -9,6 +9,13 @@ npm install
 npm start        # server di http://localhost:3000
 ```
 
+## Web UI Test (Swagger UI)
+
+Buka **http://localhost:3000/** (atau `/docs`) di browser — UI ala [fmcapi](https://github.com/PainMods/fmcapi) berbasis Swagger UI. Klik endpoint lalu **Try it out** untuk test langsung tanpa perlu curl.
+
+- `/docs` — halaman UI test (Swagger UI)
+- `/swagger.json` — spec OpenAPI 3.0 (bisa dipakai untuk generate client)
+
 ## Endpoint
 
 | # | Endpoint | Contoh |

@@ -13,6 +13,8 @@
  */
 
 const express = require("express");
+const path = require("path");
+const swaggerUiDist = require("swagger-ui-dist").getAbsoluteFSPath();
 const scraper = require("./scraper");
 
 const app = express();
@@ -87,23 +89,60 @@ app.get(
   handler((req) => scraper.searchComic(req.query.q || req.params.query, req.params.page))
 );
 
-// docs sederhana di root
-app.get("/", (_req, res) => {
-  res.json({
-    creator: scraper.CREATOR,
-    success: true,
-    message: "Komikhwa Scraper API — format response PERSIS API Sanka (Komikindo)",
-    endpoints: {
-      latest: `${P}/latest/:page            contoh: ${P}/latest/1`,
-      detail: `${P}/detail/:slug            contoh: ${P}/detail/my-avatar-is-becoming-the-final-boss-remake`,
-      chapter: `${P}/chapter/:slug          contoh: ${P}/chapter/my-avatar-is-becoming-the-final-boss-remake-chapter-0`,
-      library: `${P}/library?page=1         filter opsional: &genre=action,drama&order=latest&type=manhwa`,
-      genres: `${P}/genres`,
-      search: `${P}/search/:query/:page     contoh: ${P}/search/princess/1`,
-    },
-    source: scraper.BASE_URL,
-  });
+// ===== Web UI test (Swagger UI ala fmcapi) =====
+
+// aset swagger-ui (css/js) dari swagger-ui-dist
+app.use("/swagger-ui", express.static(swaggerUiDist));
+
+// spec OpenAPI
+app.get("/swagger.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.sendFile(path.join(__dirname, "swagger.json"));
 });
+
+// halaman docs: test endpoint langsung dari browser
+app.get("/docs", (_req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Komikhwa Scraper API — Docs</title>
+  <link rel="stylesheet" href="/swagger-ui/swagger-ui.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { background-color: #ffffff !important; font-family: 'Inter', sans-serif; margin: 0; }
+    .swagger-ui .info { text-align: center; margin-bottom: 20px; }
+    .swagger-ui .info h1 { font-size: 26px; font-weight: bold; color: #222; }
+    .swagger-ui .info p { font-size: 14px; color: #555; }
+    .swagger-ui .info a { color: #007bff; font-weight: bold; text-decoration: none; }
+    .swagger-ui .opblock { border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; transition: all 0.3s ease-in-out; }
+    .swagger-ui .opblock:hover { box-shadow: 0px 4px 8px rgba(0,0,0,0.1); }
+    .swagger-ui .opblock-tag { font-size: 18px; font-weight: bold; color: #333; }
+    .swagger-ui .opblock-summary-method { border-radius: 5px; font-size: 14px; font-weight: bold; }
+    .swagger-ui .btn.execute { background: #007bff; border-color: #007bff; }
+    .swagger-ui .scheme-container { box-shadow: none; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="/swagger-ui/swagger-ui-bundle.js"></script>
+  <script>
+    SwaggerUIBundle({
+      url: "/swagger.json",
+      dom_id: "#swagger-ui",
+      deepLinking: true,
+      docExpansion: "list",
+      defaultModelRendering: "model",
+      persistAuthorization: true,
+    });
+  </script>
+</body>
+</html>`);
+});
+
+// root -> langsung ke docs biar gampang test
+app.get("/", (_req, res) => res.redirect("/docs"));
 
 // Railway / lokal: jalankan server langsung
 if (require.main === module) {
