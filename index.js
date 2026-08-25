@@ -18,6 +18,9 @@ const scraper = require("./scraper");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// pretty print JSON ala API Sanka (indent 2 spasi)
+app.set("json spaces", 2);
+
 app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
