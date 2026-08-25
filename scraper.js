@@ -461,19 +461,24 @@ async function getGenres() {
 
 /** 6. Cari komik -> /comic/komikindo/search/{query}/{page} */
 async function searchComic(query, page = 1) {
-  const q = encodeURIComponent(query);
+  // buang tanda kutip luar, mis. '"princess"' -> 'princess'
+  const rawQuery = String(query || "").replace(/^"|"$/g, "").trim();
+  const q = encodeURIComponent(rawQuery);
   const url =
     Number(page) > 1 ? `${BASE_URL}/page/${page}/?s=${q}` : `${BASE_URL}/?s=${q}`;
   const html = await fetchHtml(url);
   const $ = cheerio.load(html);
 
-  const queryText =
-    cleanText($(".search-term-info strong").first().text()) || query;
+  // komikhwa membungkus kata kunci dengan kutip di <strong>"princess"</strong>
+  const siteQuery = cleanText($(".search-term-info strong").first().text()).replace(
+    /^"|"$/g,
+    ""
+  );
   const results = parseMangaGrid($);
   const hasNextPage = results.length >= 20;
 
   return ok({
-    query: queryText,
+    query: rawQuery || siteQuery,
     pagination: {
       currentPage: Number(page) || 1,
       hasNextPage,

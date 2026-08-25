@@ -105,6 +105,12 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Komikhwa Scraper API jalan di http://localhost:${PORT}`);
-});
+// Railway / lokal: jalankan server langsung
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Komikhwa Scraper API jalan di http://localhost:${PORT}`);
+  });
+}
+
+// Vercel (serverless): export app sebagai module
+module.exports = app;
