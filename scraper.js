@@ -40,6 +40,14 @@ async function fetchHtml(url) {
     err.statusCode = res.status === 404 ? 404 : 502;
     throw err;
   }
+  // deteksi halaman shutdown "ITZ OVER" — situs mati tapi HTTP masih 200
+  if (typeof res.data === "string" && /<title>\s*Itz Over\s*<\/title>/i.test(res.data)) {
+    const err = new Error(
+      "Situs Komikhwa sedang offline/mati (halaman 'Itz Over'). Coba lagi nanti atau gunakan domain baru bila tersedia."
+    );
+    err.statusCode = 503;
+    throw err;
+  }
   return res.data;
 }
 
@@ -466,15 +474,22 @@ async function searchComic(query, page = 1) {
   const q = encodeURIComponent(rawQuery);
   const url =
     Number(page) > 1 ? `${BASE_URL}/page/${page}/?s=${q}` : `${BASE_URL}/?s=${q}`;
-  const html = await fetchHtml(url);
-  const $ = cheerio.load(html);
+  let html = await fetchHtml(url);
+  let $ = cheerio.load(html);
 
   // komikhwa membungkus kata kunci dengan kutip di <strong>"princess"</strong>
   const siteQuery = cleanText($(".search-term-info strong").first().text()).replace(
     /^"|"$/g,
     ""
   );
-  const results = parseMangaGrid($);
+  let results = parseMangaGrid($);
+
+  // fallback: coba parameter post_type=wp-manga kalau hasil pertama kosong
+  if (results.length === 0) {
+    html = await fetchHtml(`${url}${url.includes("?") ? "&" : "?"}post_type=wp-manga`);
+    $ = cheerio.load(html);
+    results = parseMangaGrid($);
+  }
   const hasNextPage = results.length >= 20;
 
   return ok({

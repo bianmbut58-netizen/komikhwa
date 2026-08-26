@@ -36,7 +36,7 @@ function handler(fn) {
       res.json(result);
     } catch (err) {
       const status = err.statusCode || err.response?.status || 500;
-      res.status(status === 404 ? 404 : 500).json({
+      res.status(status).json({
         creator: scraper.CREATOR,
         success: false,
         message: err.message || "Error fetching komik from Komikhwa",
